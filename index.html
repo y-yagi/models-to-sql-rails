@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Models-to-sql-rails by paladini</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Models-to-sql-rails</h1>
+        <h2>Easily convert ActiveRecord models to SQL scripts</h2>
+        <a href="https://github.com/paladini/models-to-sql-rails" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h2>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Models to SQL Rails is a gem that allows you to dump ActiveRecord models graphs back into SQL or Rails fixtures format. With this gem you can easily convert a model or an array of models to a script like:</p>
+
+<div class="highlight highlight-sql"><pre><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">modelName</span> <span class="p">(</span><span class="s1">'title'</span><span class="p">,</span><span class="s1">'description'</span><span class="p">)</span> <span class="k">values</span> <span class="p">(</span><span class="s1">'Awesome Title'</span><span class="p">,</span> <span class="s1">'Wow, amaze description, much doge.'</span><span class="p">);</span>
+</pre></div>
+
+<p>This was just a example, this is a powerful and simple gem that can solve a lot of problems.</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>If you want use this gem in your project, you must add the following line to your <code>gemfile</code>:</p>
+
+<div class="highlight highlight-ruby"><pre><span class="c1"># If you want the most recent version:</span>
+<span class="n">gem</span> <span class="s1">'models-to-sql-rails'</span><span class="p">,</span> <span class="ss">:git</span> <span class="o">=&gt;</span> <span class="s1">'git://github.com/paladini/models-to-sql-rails.git'</span>
+
+<span class="c1"># If you want the most stable version:</span>
+<span class="n">gem</span> <span class="s2">"models-to-sql-rails"</span><span class="p">,</span> <span class="s2">"~&gt; 1.0.3"</span>
+</pre></div>
+
+<p>Then, you must open your terminal (Ctrl+Alt+T) and run the following command on your project root path:</p>
+
+<pre lang="shell"><code>bundle install
+</code></pre>
+
+<p>Now you're ready to start coding - easy, no?</p>
+
+<h2>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<p>Imagine that you have a scenario like that:</p>
+
+<div class="highlight highlight-ruby"><pre><span class="nb">require</span> <span class="s1">'models_to_sql'</span>
+
+<span class="n">items</span> <span class="o">=</span> <span class="o">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">10</span>
+  <span class="n">items</span> <span class="o">&lt;&lt;</span> <span class="no">Item</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+      <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="n">generate_random_name</span><span class="p">(),</span> 
+      <span class="ss">:description</span> <span class="o">=&gt;</span> <span class="n">generate_random_description</span><span class="p">(),</span>
+      <span class="ss">:url</span> <span class="o">=&gt;</span> <span class="n">generate_random_url</span><span class="p">(),</span>
+      <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="s2">"Goods"</span><span class="p">,</span>
+      <span class="ss">:category</span> <span class="o">=&gt;</span> <span class="s2">"Electronics"</span><span class="p">,</span>
+      <span class="ss">:image_url</span> <span class="o">=&gt;</span> <span class="n">generate_random_image_url</span><span class="p">()</span>
+    <span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1">###################################</span>
+<span class="c1">#                                 #</span>
+<span class="c1">#   Now let's play with our gem   #</span>
+<span class="c1">#                                 #</span>
+<span class="c1">###################################</span>
+
+<span class="n">items</span><span class="o">.</span><span class="n">to_sql_insert</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('UKlRBjdsyzLtjCL', 'GWpDhkVtkUHkazW', 'CGeCMJjTQGPFUbc', 'Goods', 'Electronics', 'kQWPeRytZAedVnF');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('UbOwdYzzFAKckNF', 'nlrMddCWRkYznBH', 'HOdGfDQBHmxSvSW', 'Goods', 'Electronics', 'PtWCKyhxrMFZVJd');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('NvQEUPVgKrPPaQh', 'uTPhqUvVTClimXA', 'HcTtNNoDjncnAIN', 'Goods', 'Electronics', 'LvtpaxTlLWblyar');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('GXSujkenwzvUqcS', 'QRjnvJROfZVSVEj', 'JoGNZMrjmUFlqVM', 'Goods', 'Electronics', 'yVJxiNEWFhQJbKv');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('gtJRWGAFOAvPzMa', 'TOFcwXlFxlLroTo', 'IlNmsRvShgbYace', 'Goods', 'Electronics', 'yLIBqYQjVIBeRcB');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('dUMiXZOzASvMyAv', 'nNuTUCjRsxNNoUU', 'qumOEoEpwGrJcjA', 'Goods', 'Electronics', 'PwbjaGayRZdwlKv');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('heuqrYERTtdUfgS', 'ZYckUtadljKbTBA', 'iFwqJYbqYYgEJNv', 'Goods', 'Electronics', 'BHHOXSFORpDsZBU');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('jFjywdyxTWrWrvC', 'MaJfdgHSENuHkrW', 'hnRJJwsSKHYCnvo', 'Goods', 'Electronics', 'fkKuTpgmvCYEzOK');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('JOIlNUFUVcMtQrP', 'PjLMkYvyFYGlRlr', 'MHucPxQxylqLQia', 'Goods', 'Electronics', 'quWbZUHSXwLvClY');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('UxtBOSKroxWtShX', 'ORVtVgfCTonQIZH', 'SjWgwuZBxLLHKCe', 'Goods', 'Electronics', 'drOiSxLZAkFtbCW');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('juAiBiHnFybnjlL', 'ouDFQXnSkRIMQaR', 'hgifUygkuXAWPLp', 'Goods', 'Electronics', 'dKVCzaOCJwmxIim');</span>
+
+<span class="n">items</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">to_sql_insert</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('UKlRBjdsyzLtjCL', 'GWpDhkVtkUHkazW', 'CGeCMJjTQGPFUbc', 'Goods', 'Electronics', 'kQWPeRytZAedVnF');</span>
+
+<span class="n">items</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">item</span><span class="o">|</span>
+   <span class="n">item</span><span class="o">.</span><span class="n">to_sql_insert</span>
+<span class="k">end</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('UKlRBjdsyzLtjCL', 'GWpDhkVtkUHkazW', 'CGeCMJjTQGPFUbc', 'Goods', 'Electronics', 'kQWPeRytZAedVnF');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('UbOwdYzzFAKckNF', 'nlrMddCWRkYznBH', 'HOdGfDQBHmxSvSW', 'Goods', 'Electronics', 'PtWCKyhxrMFZVJd');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('NvQEUPVgKrPPaQh', 'uTPhqUvVTClimXA', 'HcTtNNoDjncnAIN', 'Goods', 'Electronics', 'LvtpaxTlLWblyar');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('GXSujkenwzvUqcS', 'QRjnvJROfZVSVEj', 'JoGNZMrjmUFlqVM', 'Goods', 'Electronics', 'yVJxiNEWFhQJbKv');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('gtJRWGAFOAvPzMa', 'TOFcwXlFxlLroTo', 'IlNmsRvShgbYace', 'Goods', 'Electronics', 'yLIBqYQjVIBeRcB');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('dUMiXZOzASvMyAv', 'nNuTUCjRsxNNoUU', 'qumOEoEpwGrJcjA', 'Goods', 'Electronics', 'PwbjaGayRZdwlKv');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('heuqrYERTtdUfgS', 'ZYckUtadljKbTBA', 'iFwqJYbqYYgEJNv', 'Goods', 'Electronics', 'BHHOXSFORpDsZBU');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('jFjywdyxTWrWrvC', 'MaJfdgHSENuHkrW', 'hnRJJwsSKHYCnvo', 'Goods', 'Electronics', 'fkKuTpgmvCYEzOK');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('JOIlNUFUVcMtQrP', 'PjLMkYvyFYGlRlr', 'MHucPxQxylqLQia', 'Goods', 'Electronics', 'quWbZUHSXwLvClY');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('UxtBOSKroxWtShX', 'ORVtVgfCTonQIZH', 'SjWgwuZBxLLHKCe', 'Goods', 'Electronics', 'drOiSxLZAkFtbCW');</span>
+<span class="c1"># =&gt; INSERT INTO "items" ("name", "description", "url", "type", "category", "image_url") VALUES('juAiBiHnFybnjlL', 'ouDFQXnSkRIMQaR', 'hgifUygkuXAWPLp', 'Goods', 'Electronics', 'dKVCzaOCJwmxIim');</span>
+
+</pre></div>
+
+<p>Simple? If have any issue or problem, <a href="https://github.com/vivrass/models-to-sql/issues">talk to us now</a>.</p>
+
+<h2>
+<a name="original-documentation" class="anchor" href="#original-documentation"><span class="octicon octicon-link"></span></a>Original documentation</h2>
+
+<p>Original README from this <a href="https://github.com/dsabanin/models-to-sql-rails-plugin">outdated gem</a>. Have some useful informations that we don't have time to describe here.</p>
+
+<p>After installation, each AR model has to_sql method that can take following options:</p>
+
+<p>:ignore_associations_for - do not dump associations with specified models. (default: empty)
+  :ignore_models - do not dump specified models. Array of ruby Class objects is used. (default: empty)
+  :ignore_tables - do not dump specified tables (default: empty)
+  :debug - debugging mode (default: false)</p>
+
+<h2>
+<a name="contribute" class="anchor" href="#contribute"><span class="octicon octicon-link"></span></a>Contribute</h2>
+
+<p>If you do like to contribute to our project, please feel free to Fork our project or talk with us by <a href="https://github.com/vivrass/models-to-sql/issues/new">creating a new issue</a>. Rails 3.2 port by <a href="https://github.com/vivrass">Martin Provencher</a> and Rails 4.0 port + documentation by <a href="https://github.com/paladini">Fernando Paladini</a>.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/paladini/models-to-sql-rails/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/paladini/models-to-sql-rails/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/paladini/models-to-sql-rails"></a> is maintained by <a href="https://github.com/paladini">paladini</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
