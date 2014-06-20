@@ -7,6 +7,7 @@ module ModelsToSql
       baton[:dumped_ids] ||= Hash.new { |hsh,key| hsh[key] = Array.new }
       baton[:debug] ||= false
       baton[:level] ||= 0
+      result = ''
 
       return if !model.class.respond_to?(:table_name)
       return if baton[:ignore_models].include?(model.class)
@@ -15,7 +16,9 @@ module ModelsToSql
 
       baton[:dumped_ids][model.class] << model.id
 
-      output << sql(model)
+      query = sql(model)
+      output << query
+      result << query
       STDERR << "LEVEL: #{baton[:level]} Copying #{model.class}:#{model.id}\n" if baton[:debug]
 
       model.class.reflect_on_all_associations.each do |assoc|
@@ -34,6 +37,7 @@ module ModelsToSql
           end
         end
       end
+      result
     end
 
     def self.sql(model)
