@@ -1,6 +1,6 @@
 module ModelsToSql
   class Climber
-    
+
     def self.climb(model, output, baton = {})
       baton[:ignore_models] ||= []
       baton[:ignore_tables] ||= []
@@ -12,9 +12,9 @@ module ModelsToSql
       return if baton[:ignore_models].include?(model.class)
       return if baton[:ignore_tables].include?(model.class.table_name)
       return if baton[:dumped_ids][model.class].include?(model.id)
-      
+
       baton[:dumped_ids][model.class] << model.id
-      
+
       output << sql(model)
       STDERR << "LEVEL: #{baton[:level]} Copying #{model.class}:#{model.id}\n" if baton[:debug]
 
@@ -37,9 +37,9 @@ module ModelsToSql
     end
 
     def self.sql(model)
-      
+
       include ActiveModel::AttributeMethods
-      c = model.connection
+      c = model.class.connection
 
       quoted_columns = []
       quoted_values = []
