@@ -56,7 +56,11 @@ module ModelsToSql
 
       attributes_with_values.each_pair do |key,value|
         quoted_columns << c.quote_column_name(key.name)
-        quoted_values << c.quote(value)
+        if value.is_a?(Array)
+          quoted_values << "ARRAY[" + value.map { |v| c.quote(v) }.join(", ") + "]"
+        else
+          quoted_values << c.quote(value)
+        end
       end
 
       "INSERT INTO #{model.class.quoted_table_name} (#{quoted_columns.join(', ')}) VALUES(#{quoted_values.join(', ')});\n"
