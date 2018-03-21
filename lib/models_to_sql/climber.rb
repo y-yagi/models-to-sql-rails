@@ -48,14 +48,17 @@ module ModelsToSql
       quoted_columns = []
       quoted_values = []
 
-      if Rails.version.to_i >= 4
+      if Rails.version.to_f > 5.1
+        attributes_with_values = model.send(:attributes_with_values_for_create, model.attribute_names)
+      elsif Rails.version.to_i >= 4
         attributes_with_values = model.send(:arel_attributes_with_values_for_create, model.attribute_names)
       else
         attributes_with_values = model.send(:arel_attributes_values, true, true)
       end
 
       attributes_with_values.each_pair do |key,value|
-        quoted_columns << c.quote_column_name(key.name)
+        name = key.respond_to?(:name) ? key.name : key
+        quoted_columns << c.quote_column_name(name)
         if value.is_a?(Array)
           quoted_values << "ARRAY[" + value.map { |v| c.quote(v) }.join(", ") + "]"
         else
