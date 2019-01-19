@@ -48,7 +48,9 @@ module ModelsToSql
       quoted_columns = []
       quoted_values = []
 
-      if Rails.version.to_f > 5.1
+      if Rails.version.to_f > 5.2
+        attributes_with_values = model.send(:attributes_with_values, model.attribute_names)
+      elsif Rails.version.to_f > 5.1
         attributes_with_values = model.send(:attributes_with_values_for_create, model.attribute_names)
       elsif Rails.version.to_i >= 4
         attributes_with_values = model.send(:arel_attributes_with_values_for_create, model.attribute_names)
